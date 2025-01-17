@@ -176,6 +176,12 @@ export class PostsService
         query: SelectQueryBuilder<Post>,
     ): SelectQueryBuilder<Post> {
         try {
+            if (!filters.startDate) {
+                filters.startDate = new Date(1900, 0, 1);
+            }
+            if (!filters.endDate) {
+                filters.endDate = new Date(2100, 0, 1);
+            }
             return query.andWhere(
                 'post.createdAt between (:start)::timestamp and (:end)::timestamp',
                 {
