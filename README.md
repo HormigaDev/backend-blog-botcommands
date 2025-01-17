@@ -12,9 +12,38 @@ This project is an API designed to store example bot commands for Discord. It is
 
 ## Controllers
 
-You can view the documentation for each controller separately in the following files:
+You can find the documentation for each controller in the following files:
 
 - [Auth Controller](docs/AuthController.md)
 - [Users Controller](docs/UsersController.md)
 - [Roles Controller](docs/RolesController.md)
 - [Posts Controller](docs/PostController.md)
+
+## Installation
+
+Step 1: Clone this repository
+
+```bash
+git clone git@github.com:HormigaDev/backend-blog-botcommands.git
+```
+
+Step 2: Enter the project directory and install dependencies
+
+```bash
+cd backend-blog-botcommands/
+npm install
+```
+
+Step 3: Configure your `.env` file, and if you are using the `r-backups` CLI, also configure the `.r-backups` file (The example content is in `.env.template` and `.r-backups.template`)
+
+Step 4: Test or run the project
+
+```bash
+npm run test
+```
+
+or
+
+```bash
+npm run dev
+```
