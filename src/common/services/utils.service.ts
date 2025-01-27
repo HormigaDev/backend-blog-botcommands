@@ -40,7 +40,7 @@ export class UtilsService<T, T2> {
         if (error instanceof HttpException) {
             throw error; // Dejar pasar excepciones HTTP tal cual
         } else {
-            throw new CustomError({ functionOrMethod, error: error.message });
+            throw new CustomError({ functionOrMethod, error: error });
         }
     }
 }

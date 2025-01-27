@@ -6,6 +6,7 @@ import { Log } from 'src/common/models/log.entity';
 import { Repository } from 'typeorm';
 import { CustomError } from 'src/common/types/CustomError.type';
 import { SqlAction } from 'src/common/enums/SqlAction.enum';
+import { stringify } from 'flatted';
 
 jest.mock('src/common/models/audit-log.entity');
 jest.mock('src/common/models/log.entity');
@@ -109,7 +110,7 @@ describe('AuditLogsService', () => {
 
             await service.log(content);
 
-            expect(createMock).toHaveBeenCalledWith({ content: JSON.stringify(content) });
+            expect(createMock).toHaveBeenCalledWith({ content: stringify(content) });
             expect(saveMock).toHaveBeenCalledWith(content);
         });
 

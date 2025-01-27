@@ -7,6 +7,7 @@ import { PermissionsGuard } from 'src/common/guards/permissions.guard';
 import { SqlAction } from 'src/common/enums/SqlAction.enum';
 import { CreateUserDto } from 'src/common/validators/create-user.dto';
 import { UpdateUserDto } from 'src/common/validators/update-user.dto';
+import { stringify } from 'flatted';
 
 describe('UsersController', () => {
     let controller: UsersController;
@@ -102,7 +103,7 @@ describe('UsersController', () => {
                 tableName: 'users',
                 rowId: mockUser.id,
                 userId: req.user.userId,
-                details: JSON.stringify({ old: null, new: mockUser }),
+                details: stringify({ old: null, new: mockUser }),
             });
         });
     });
@@ -146,7 +147,7 @@ describe('UsersController', () => {
             expect(usersService.findOne).toHaveBeenCalledWith(id);
             expect(usersService.update).toHaveBeenCalledWith(id, body);
             expect(logService.create).toHaveBeenCalledWith({
-                details: JSON.stringify({ old: mockOldUser, new: mockUpdatedUser }),
+                details: stringify({ old: mockOldUser, new: mockUpdatedUser }),
                 operation: SqlAction.Update,
                 rowId: id,
                 tableName: 'users',
@@ -178,7 +179,7 @@ describe('UsersController', () => {
             expect(result).toEqual({});
             expect(usersService.delete).toHaveBeenCalledWith(id);
             expect(logService.create).toHaveBeenCalledWith({
-                details: JSON.stringify({ old: mockUser, new: null }),
+                details: stringify({ old: mockUser, new: null }),
                 operation: SqlAction.Delete,
                 rowId: mockUser.id,
                 tableName: 'users',

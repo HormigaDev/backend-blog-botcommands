@@ -9,6 +9,9 @@ export class Post {
     @Column({ type: 'varchar', length: 255, nullable: false })
     title: string;
 
+    @Column({ name: 'short_description', type: 'varchar', length: 300 })
+    shortDescription: string;
+
     @Column({ type: 'text', nullable: false })
     content: string;
 
@@ -20,6 +23,9 @@ export class Post {
 
     @Column({ type: 'jsonb', nullable: true })
     keywords: string[];
+
+    @Column({ type: 'integer', default: 0 })
+    views: number;
 
     @Column({ name: 'created_at', type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
     createdAt: Date;

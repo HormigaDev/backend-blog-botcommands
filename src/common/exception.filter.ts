@@ -17,11 +17,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
                 : HttpStatus.INTERNAL_SERVER_ERROR;
 
         if (!(exception instanceof HttpException)) {
-            if (exception instanceof CustomError) {
-                this.logService.log(exception);
-            } else {
-                console.log('Error: ', exception);
-            }
+            console.log(exception);
         }
 
         const message =

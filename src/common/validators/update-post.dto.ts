@@ -1,4 +1,4 @@
-import { IsOptional, IsString, IsNumber, IsArray, IsEnum } from 'class-validator';
+import { IsOptional, IsString, IsNumber, IsArray, IsEnum, Length } from 'class-validator';
 import { PostStatus } from '../enums/PostStatus.enum';
 
 export class UpdatePostDto {
@@ -9,7 +9,20 @@ export class UpdatePostDto {
      */
     @IsOptional()
     @IsString({ message: 'Title must be a string.' })
+    @Length(3, 255, { message: 'Title must be between 1 and 255 characters long.' })
     readonly title?: string;
+
+    /**
+     * The short description of the post.
+     * It must be a string if provided.
+     * It is optional.
+     */
+    @IsOptional()
+    @IsString({ message: 'Short description must be a string.' })
+    @Length(50, 300, {
+        message: 'Short description must be a between 50 and 300 characters long.',
+    })
+    readonly shortDescription?: string;
 
     /**
      * The content of the post.

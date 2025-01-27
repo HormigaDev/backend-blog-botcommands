@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, IsNumber, IsOptional, IsArray } from 'class-validator';
+import { IsNotEmpty, IsString, IsNumber, IsOptional, IsArray, Length } from 'class-validator';
 
 export class UploadPostDto {
     /**
@@ -7,7 +7,19 @@ export class UploadPostDto {
      */
     @IsNotEmpty({ message: 'Title is required.' })
     @IsString({ message: 'Title must be a string.' })
+    @Length(3, 255, { message: 'Title must be between 1 and 255 characters long.' })
     readonly title: string;
+
+    /**
+     * The short description of the post.
+     * It must be a non-empty string.
+     */
+    @IsNotEmpty({ message: 'Title is required.' })
+    @IsString({ message: 'Title must be a string.' })
+    @Length(50, 300, {
+        message: 'Short description must be a between 50 and 300 characters long.',
+    })
+    readonly shortDescription: string;
 
     /**
      * The keywords associated with the post.

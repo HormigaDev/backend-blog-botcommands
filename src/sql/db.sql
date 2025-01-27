@@ -64,10 +64,12 @@ values
 create table if not exists posts (
     id serial primary key,
     title varchar(255) not null,
+    short_description varchar(300),
     content text not null,
     user_id integer not null,
     status_id integer not null default 1,
     keywords jsonb default '[]',
+    views integer default 0,
     created_at timestamp not null default current_timestamp,
     last_update timestamp not null default current_timestamp,
     foreign key (user_id) references users(id)

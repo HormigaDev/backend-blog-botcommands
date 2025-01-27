@@ -1,6 +1,5 @@
 export enum PostOrderBy {
-    PostDate = 'date',
+    PostDate = 'createdAt',
     PostTitle = 'title',
-    PostDescription = 'description',
-    PostStatus = 'status',
+    PostPopularity = 'views',
 }

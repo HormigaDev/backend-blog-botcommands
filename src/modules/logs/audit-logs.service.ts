@@ -6,6 +6,7 @@ import { AuditLog } from 'src/common/models/audit-log.entity';
 import { Log } from 'src/common/models/log.entity';
 import { Repository } from 'typeorm';
 import { CustomError } from 'src/common/types/CustomError.type';
+import { stringify } from 'flatted';
 
 @Injectable()
 export class AuditLogsService {
@@ -39,7 +40,7 @@ export class AuditLogsService {
 
     async log(content: any): Promise<void> {
         try {
-            const log = this.logRepository.create({ content: JSON.stringify(content) });
+            const log = this.logRepository.create({ content: stringify(content) });
             await this.logRepository.save(log);
         } catch (error) {
             throw new CustomError({ functionOrMethod: 'AuditLogsService/log', error });

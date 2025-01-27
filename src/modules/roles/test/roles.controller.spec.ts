@@ -4,6 +4,7 @@ import { RolesService } from '../roles.service';
 import { AuditLogsService } from 'src/modules/logs/audit-logs.service';
 import { SqlAction } from 'src/common/enums/SqlAction.enum';
 import { UsersService } from 'src/modules/users/users.service';
+import { stringify } from 'flatted';
 
 describe('RolesController', () => {
     let controller: RolesController;
@@ -74,7 +75,7 @@ describe('RolesController', () => {
             expect(rolesService.create).toHaveBeenCalledWith(mockBody);
 
             expect(logService.create).toHaveBeenCalledWith({
-                details: JSON.stringify({
+                details: stringify({
                     old: null,
                     new: mockRole,
                 }),
@@ -107,7 +108,7 @@ describe('RolesController', () => {
             expect(rolesService.update).toHaveBeenCalledWith(mockId, mockBody);
 
             expect(logService.create).toHaveBeenCalledWith({
-                details: JSON.stringify({
+                details: stringify({
                     old: mockOldRole,
                     new: mockNewRole,
                 }),
@@ -135,7 +136,7 @@ describe('RolesController', () => {
             expect(rolesService.delete).toHaveBeenCalledWith(mockId);
 
             expect(logService.create).toHaveBeenCalledWith({
-                details: JSON.stringify({
+                details: stringify({
                     old: mockRole,
                     new: null,
                 }),

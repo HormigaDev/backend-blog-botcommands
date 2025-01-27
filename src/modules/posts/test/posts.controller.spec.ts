@@ -22,12 +22,14 @@ describe('PostsController', () => {
     const mockPost: Post = {
         id: 1,
         title: 'Test Post',
+        shortDescription: 'Short description',
         content: 'This is a test post content.',
         userId: 1,
         status: 1,
         keywords: ['test', 'nestjs'],
         createdAt: new Date(),
         lastUpdate: new Date(),
+        views: 0,
     };
 
     const mockUser: User = {
@@ -124,7 +126,11 @@ describe('PostsController', () => {
 
     describe('uploadFiles', () => {
         it('debería subir un nuevo post con archivos', async () => {
-            const body = { title: 'Post Title', keywords: ['keyword'] };
+            const body = {
+                title: 'Post Title',
+                keywords: ['keyword'],
+                shortDescription: 'Short description',
+            };
             const mockContent = 'content'; // El contenido del archivo
             jest.spyOn(usersService, 'findOne').mockResolvedValue(mockUser);
             jest.spyOn(postService, 'create').mockResolvedValue(mockPost);
@@ -148,12 +154,21 @@ describe('PostsController', () => {
 
         it('debería lanzar BadRequestException si no se suben archivos', async () => {
             await expect(
-                controller.uploadFiles([], { title: 'Title', keywords: [] }, {}),
+                controller.uploadFiles(
+                    [],
+                    { title: 'Title', keywords: [], shortDescription: 'Short description' },
+                    {},
+                ),
             ).rejects.toThrow(BadRequestException);
         });
 
         it('debería lanzar NotFoundException si no se encuentra el post al actualizar', async () => {
-            const body = { id: 1, title: 'Post Title', keywords: ['keyword'] };
+            const body = {
+                id: 1,
+                title: 'Post Title',
+                keywords: ['keyword'],
+                shortDescription: 'Short description',
+            };
 
             jest.spyOn(postService, 'findOne').mockResolvedValue(null);
 

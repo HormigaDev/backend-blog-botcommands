@@ -23,6 +23,7 @@ import { UpdateRoleDto } from 'src/common/validators/update-role.dto';
 import { IdPipe } from 'src/common/pipes/id.pipe';
 import { AuditLogsService } from '../logs/audit-logs.service';
 import { SqlAction } from 'src/common/enums/SqlAction.enum';
+import { stringify } from 'flatted';
 
 @Controller('roles')
 @UseGuards(JwtAuthGuard)
@@ -47,7 +48,7 @@ export class RolesController {
     async createRole(@Body() body: CreateRoleDto, @Req() req: any) {
         const role = await this.rolesService.create(body);
         await this.logService.create({
-            details: JSON.stringify({
+            details: stringify({
                 old: null,
                 new: role,
             }),
@@ -71,7 +72,7 @@ export class RolesController {
         const oldRole = await this.rolesService.findOne(id);
         const newRole = await this.rolesService.update(id, body);
         await this.logService.create({
-            details: JSON.stringify({
+            details: stringify({
                 old: oldRole,
                 new: newRole,
             }),
@@ -90,7 +91,7 @@ export class RolesController {
     async deleteRole(@Param('id', IdPipe) id: number, @Req() req: any) {
         const role = await this.rolesService.delete(id);
         await this.logService.create({
-            details: JSON.stringify({
+            details: stringify({
                 old: role,
                 new: null,
             }),

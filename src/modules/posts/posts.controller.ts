@@ -13,6 +13,7 @@ import {
     Req,
     Body,
     Res,
+    Put,
 } from '@nestjs/common';
 import { Public } from 'src/common/decorators/public.decorator';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
@@ -32,6 +33,8 @@ import { AuditLogsService } from '../logs/audit-logs.service';
 import { SqlAction } from 'src/common/enums/SqlAction.enum';
 import { UploadPostDto } from 'src/common/validators/upload-post.dto';
 import { Response } from 'express';
+import { stringify } from 'flatted';
+import { PostOrderBy } from 'src/common/enums/PostOrderBy.enum';
 
 @Controller('posts')
 @UseGuards(JwtAuthGuard)
@@ -58,10 +61,31 @@ export class PostsController {
         @Query('filters') filters: PostFiltersDto,
         @Query('order') order: PostOrderByOptionsDto,
     ) {
+        const filtersToCount: PostFiltersDto = { ...filters };
         const posts = (await this.postService.find(filters, pagination, order)) as Post[];
-        const count = await this.postService.count(filters);
+        const count = await this.postService.count(filtersToCount);
 
         return { posts, count };
+    }
+
+    @Get('/download/:id')
+    @HttpCode(200)
+    @RequirePermissions([Permissions.UpdatePosts])
+    @UseGuards(PermissionsGuard)
+    async downloadPostContent(@Param('id', IdPipe) id: number, @Res() res: Response) {
+        const post = await this.postService.findOne(id);
+        res.setHeader('Content-Type', 'text/markdown');
+        res.setHeader('Content-Disposition', `attachment; filename="${post.title}.md"`);
+
+        res.send(post.content);
+    }
+
+    @Put('/view/:id')
+    @HttpCode(204)
+    @Public()
+    async registerView(@Param('id', IdPipe) id: number) {
+        await this.postService.registerPostView(id);
+        return {};
     }
 
     @HttpPost('upload')
@@ -86,7 +110,7 @@ export class PostsController {
         if (!files || files.length === 0) {
             throw new BadRequestException('No files uploaded');
         }
-        const { title, keywords } = body;
+        const { title, keywords, shortDescription } = body;
         const content = files[0].buffer.toString();
         const user = await this.usersService.findOne(req.user?.userId);
 
@@ -103,7 +127,7 @@ export class PostsController {
             });
 
             await this.logsService.create({
-                details: JSON.stringify({
+                details: stringify({
                     old: oldPost,
                     new: newPost,
                 }),
@@ -115,13 +139,14 @@ export class PostsController {
         } else {
             const post = await this.postService.create({
                 content,
+                shortDescription,
                 userId: user.id,
                 keywords: ['discord', 'bot', 'commands', ...keywords],
                 title,
             });
 
             await this.logsService.create({
-                details: JSON.stringify({
+                details: stringify({
                     old: null,
                     new: post,
                 }),
@@ -135,17 +160,5 @@ export class PostsController {
         return {
             message: 'Post saved sucessfully!',
         };
-    }
-
-    @Get('/download/:id')
-    @HttpCode(200)
-    @RequirePermissions([Permissions.UpdatePosts])
-    @UseGuards(PermissionsGuard)
-    async downloadPostContent(@Param('id', IdPipe) id: number, @Res() res: Response) {
-        const post = await this.postService.findOne(id);
-        res.setHeader('Content-Type', 'text/markdown');
-        res.setHeader('Content-Disposition', `attachment; filename="${post.title}.md"`);
-
-        res.send(post.content);
     }
 }

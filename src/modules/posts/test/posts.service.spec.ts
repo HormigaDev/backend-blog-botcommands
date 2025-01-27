@@ -60,6 +60,7 @@ describe('PostsService', () => {
         it('debería crear y guardar un post', async () => {
             const dto = {
                 title: 'Test Post',
+                shortDescription: 'Short description',
                 content: 'Content',
                 userId: 1,
                 keywords: [],
@@ -70,6 +71,7 @@ describe('PostsService', () => {
                 status: PostStatus.Active,
                 createdAt: new Date(),
                 lastUpdate: new Date(),
+                views: 0,
             };
 
             repository.save.mockResolvedValue(mockPost);
@@ -85,12 +87,14 @@ describe('PostsService', () => {
             const mockPost = {
                 id: 1,
                 title: 'Test Post',
+                shortDescription: 'Short description',
                 content: 'Content',
                 userId: 1,
                 status: 1,
                 keywords: [],
                 createdAt: new Date(),
                 lastUpdate: new Date(),
+                views: 0,
             };
 
             jest.spyOn(repository.createQueryBuilder(), 'getOne').mockResolvedValue(mockPost);
@@ -111,12 +115,14 @@ describe('PostsService', () => {
             const mockPost = {
                 id: 1,
                 title: 'Test Post',
+                shortDescription: 'Short description',
                 content: 'Content',
                 userId: 1,
                 status: 1,
                 keywords: [],
                 createdAt: new Date(),
                 lastUpdate: new Date(),
+                views: 0,
             };
 
             jest.spyOn(repository.createQueryBuilder(), 'getOne').mockResolvedValue(mockPost);
@@ -139,22 +145,26 @@ describe('PostsService', () => {
                 {
                     id: 1,
                     title: 'Test Post',
+                    shortDescription: 'Short description',
                     content: 'Content',
                     userId: 1,
                     status: 1,
                     keywords: [],
                     createdAt: new Date(),
                     lastUpdate: new Date(),
+                    views: 0,
                 },
                 {
                     id: 2,
                     title: 'Test Post2',
+                    shortDescription: 'Short description 2',
                     content: 'Content2',
                     userId: 1,
                     status: 1,
                     keywords: [],
                     createdAt: new Date(),
                     lastUpdate: new Date(),
+                    views: 0,
                 },
             ];
 
@@ -190,22 +200,26 @@ describe('PostsService', () => {
                 {
                     id: 1,
                     title: 'Test Post',
+                    shortDescription: 'Short description',
                     content: 'Content',
                     userId: 1,
                     status: 1,
                     keywords: [],
                     createdAt: new Date(),
                     lastUpdate: new Date(),
+                    views: 0,
                 },
                 {
                     id: 2,
                     title: 'Test Post2',
+                    shortDescription: 'Short description 2',
                     content: 'Content2',
                     userId: 1,
                     status: 1,
                     keywords: [],
                     createdAt: new Date(),
                     lastUpdate: new Date(),
+                    views: 0,
                 },
             ];
 

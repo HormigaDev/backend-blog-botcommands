@@ -23,6 +23,7 @@ import { UpdateUserDto } from 'src/common/validators/update-user.dto';
 import { IdPipe } from 'src/common/pipes/id.pipe';
 import { PaginationPipe } from 'src/common/pipes/pagination.pipe';
 import { PaginationInterface } from 'src/common/interfaces/pagination.interface';
+import { stringify } from 'flatted';
 
 @Controller('users')
 @UseGuards(JwtAuthGuard)
@@ -73,7 +74,7 @@ export class UsersController {
             tableName: 'users',
             rowId: user.id,
             userId: req.user?.userId,
-            details: JSON.stringify({
+            details: stringify({
                 old: null,
                 new: user,
             }),
@@ -95,7 +96,7 @@ export class UsersController {
         const user = (await this.usersService.update(id, body)).clearPassword();
 
         await this.logService.create({
-            details: JSON.stringify({
+            details: stringify({
                 old: oldUser,
                 new: user,
             }),
@@ -117,7 +118,7 @@ export class UsersController {
         const user = (await this.usersService.update(id, body)).clearPassword();
 
         await this.logService.create({
-            details: JSON.stringify({
+            details: stringify({
                 old: oldUser,
                 new: user,
             }),
@@ -137,7 +138,7 @@ export class UsersController {
     async deleteUser(@Param('id', IdPipe) id: number, @Req() req: any) {
         const user = (await this.usersService.delete(id)).clearPassword();
         await this.logService.create({
-            details: JSON.stringify({
+            details: stringify({
                 old: user,
                 new: null,
             }),

@@ -13,7 +13,7 @@ export class PaginationPipe implements PipeTransform {
             throw new BadRequestException('Page must be a number greater than 0');
         }
 
-        const allowedLimits = [10, 20, 30, 50, 100];
+        const allowedLimits = [3, 10, 20, 30, 50, 100];
         if (!allowedLimits.includes(+limit)) {
             throw new BadRequestException(
                 `Limit must be a one of the following values: ${allowedLimits.join(', ')}`,

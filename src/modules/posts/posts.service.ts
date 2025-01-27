@@ -29,6 +29,7 @@ export class PostsService
             const post = new Post();
             post.title = dto.title;
             post.content = dto.content;
+            post.shortDescription = dto.shortDescription;
             post.userId = dto.userId;
             post.keywords = dto.keywords;
             post.status = PostStatus.Active;
@@ -72,8 +73,8 @@ export class PostsService
                 query = query.andWhere(
                     '(post.title like :query or post.content like :query or post.keywords @> :keywords)',
                     {
-                        query: `%${query}%`,
-                        keywords: `[${JSON.stringify(query)}]`,
+                        query: `%${filters.query}%`,
+                        keywords: `[${JSON.stringify(filters.query)}]`,
                     },
                 );
             }
@@ -97,8 +98,8 @@ export class PostsService
                 query = query.andWhere(
                     '(post.title like :query or post.content like :query or post.keywords @> :keywords)',
                     {
-                        query: `%${query}%`,
-                        keywords: `[${JSON.stringify(query)}]`,
+                        query: `%${filters.query}%`,
+                        keywords: `[${JSON.stringify(filters.query)}]`,
                     },
                 );
             }
@@ -133,6 +134,16 @@ export class PostsService
         } catch (error) {
             this.handleError('PostsService/update', error);
         }
+    }
+
+    async registerPostView(id: number): Promise<void> {
+        await this.findOne(id);
+        await this.postRepository
+            .createQueryBuilder()
+            .update()
+            .set({ views: () => 'views + 1' })
+            .where('id = :id', { id })
+            .execute();
     }
 
     async delete(id: number): Promise<Post> {
@@ -181,14 +192,16 @@ export class PostsService
             }
             if (!filters.endDate) {
                 filters.endDate = new Date(2100, 0, 1);
+            } else {
+                // Sumar un día al endDate
+                const nextDay = new Date(filters.endDate);
+                nextDay.setDate(nextDay.getDate() + 1);
+                filters.endDate = nextDay;
             }
-            return query.andWhere(
-                'post.createdAt between (:start)::timestamp and (:end)::timestamp',
-                {
-                    start: filters.startDate,
-                    end: filters.endDate,
-                },
-            );
+            return query.andWhere('post.createdAt >= :start AND post.createdAt < :end', {
+                start: filters.startDate,
+                end: filters.endDate,
+            });
         } catch (error) {
             this.handleError('PostsService/applyDateFilters', error);
         }
@@ -207,11 +220,8 @@ export class PostsService
                 case PostOrderBy.PostTitle:
                     orderField = 'title';
                     break;
-                case PostOrderBy.PostDescription:
-                    orderField = 'content';
-                    break;
-                case PostOrderBy.PostStatus:
-                    orderField = 'status';
+                case PostOrderBy.PostPopularity:
+                    orderField = 'views';
                     break;
                 default:
                     orderField = 'createdAt';

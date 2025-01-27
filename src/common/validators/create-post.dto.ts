@@ -11,6 +11,17 @@ export class CreatePostDto {
     readonly title: string;
 
     /**
+     * The short description of the post.
+     * It must be a non-empty string.
+     */
+    @IsNotEmpty({ message: 'Short description is required.' })
+    @IsString({ message: 'Short description must be a string.' })
+    @Length(50, 300, {
+        message: 'Short description must be a between 50 and 300 characters long.',
+    })
+    readonly shortDescription: string;
+
+    /**
      * The content of the post.
      * It must be a non-empty string.
      */
