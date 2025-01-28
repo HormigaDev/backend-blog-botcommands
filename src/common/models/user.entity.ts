@@ -1,5 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, JoinTable } from 'typeorm';
 import { UserStatus } from '../enums/UserStatus.enum';
+import { Role } from './role.entity';
 
 @Entity('users')
 export class User {
@@ -23,6 +24,20 @@ export class User {
 
     @Column({ name: 'last_update', type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
     lastUpdate: Date;
+
+    @ManyToMany(() => Role, (role) => role.users)
+    @JoinTable({
+        name: 'user_roles',
+        joinColumn: {
+            name: 'user_id',
+            referencedColumnName: 'id',
+        },
+        inverseJoinColumn: {
+            name: 'role_id',
+            referencedColumnName: 'id',
+        },
+    })
+    roles: Role[];
 
     clearPassword() {
         delete this.password;

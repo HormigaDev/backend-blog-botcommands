@@ -136,6 +136,15 @@ export class PostsService
         }
     }
 
+    async archivePost(id: number): Promise<void> {
+        try {
+            const post = await this.findOne(id);
+            await this.updateEntity(post.id, { status: PostStatus.Inactive });
+        } catch (error) {
+            this.handleError('PostsService/archivePost', error);
+        }
+    }
+
     async registerPostView(id: number): Promise<void> {
         await this.findOne(id);
         await this.postRepository

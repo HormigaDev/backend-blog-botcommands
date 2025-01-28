@@ -23,8 +23,7 @@ export class RolesService
     async findByUser(id: number): Promise<Role[]> {
         return this.roleRepository
             .createQueryBuilder('role')
-            .innerJoin('user_roles', 'userRole', 'userRole.roleId = role.id')
-            .innerJoin('userRole.user', 'user')
+            .innerJoin('role.users', 'user')
             .where('user.id = :id', { id })
             .getMany();
     }

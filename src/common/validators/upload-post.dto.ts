@@ -35,8 +35,8 @@ export class UploadPostDto {
      * It is optional, and if provided, it must be a number.
      */
     @IsOptional()
-    @IsNumber({}, { message: 'Post ID must be a number.' })
-    readonly id?: number;
+    @IsString({ message: 'Post ID must be a string number.' })
+    readonly id?: string;
 
     /**
      * The files associated with the post.

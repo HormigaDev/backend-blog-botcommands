@@ -1,6 +1,7 @@
 import {
     Body,
     Controller,
+    Get,
     HttpCode,
     Post,
     Put,
@@ -42,7 +43,7 @@ export class AuthController {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === 'production',
                 sameSite: 'strict',
-                maxAge: 4 * 60 * 60 * 1000, // 4 hours
+                maxAge: 4 * 60 * 60 * 1000,
             });
 
             return res.status(200).json({
@@ -51,6 +52,13 @@ export class AuthController {
         } else {
             throw new UnauthorizedException('Invalid Credentials');
         }
+    }
+
+    @Get('/authenticated')
+    @HttpCode(200)
+    @UseGuards(JwtAuthGuard)
+    async isAuthenticated() {
+        return { message: 'IS AUTHENTICATED' };
     }
 
     @Post('logout')

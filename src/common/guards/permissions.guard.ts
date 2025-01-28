@@ -34,7 +34,6 @@ export class PermissionsGuard implements CanActivate {
         }
 
         const roles = await this.rolesService.findByUser(user.id);
-        //si es opcional al menos debe cumplir con un permiso
         if (optional) {
             if (
                 permissions.some((perm) => {
@@ -47,7 +46,6 @@ export class PermissionsGuard implements CanActivate {
             } else {
                 throw new ForbiddenException('Permission denied');
             }
-            //si no es opcional debe cumplir con todos los permisos
         } else {
             if (
                 permissions.every((perm) => {

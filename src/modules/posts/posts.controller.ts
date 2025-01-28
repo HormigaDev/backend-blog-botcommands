@@ -14,6 +14,7 @@ import {
     Body,
     Res,
     Put,
+    Delete,
 } from '@nestjs/common';
 import { Public } from 'src/common/decorators/public.decorator';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
@@ -34,7 +35,6 @@ import { SqlAction } from 'src/common/enums/SqlAction.enum';
 import { UploadPostDto } from 'src/common/validators/upload-post.dto';
 import { Response } from 'express';
 import { stringify } from 'flatted';
-import { PostOrderBy } from 'src/common/enums/PostOrderBy.enum';
 
 @Controller('posts')
 @UseGuards(JwtAuthGuard)
@@ -80,6 +80,15 @@ export class PostsController {
         res.send(post.content);
     }
 
+    @Put('/archive/:id')
+    @HttpCode(204)
+    @RequirePermissions([Permissions.UpdatePosts])
+    @UseGuards(PermissionsGuard)
+    async archivePost(@Param('id', IdPipe) id: number) {
+        await this.postService.archivePost(id);
+        return {};
+    }
+
     @Put('/view/:id')
     @HttpCode(204)
     @Public()
@@ -115,14 +124,23 @@ export class PostsController {
         const user = await this.usersService.findOne(req.user?.userId);
 
         if (body.id) {
-            const oldPost = await this.postService.findOne(body.id);
+            const postId = parseInt(body.id);
+            if (isNaN(postId)) {
+                throw new BadRequestException('The Post ID must be a valid number;');
+            }
+            if (postId <= 0) {
+                throw new BadRequestException('The Post ID must be a positive number');
+            }
+
+            const oldPost = await this.postService.findOne(postId);
             if (!oldPost) {
                 throw new NotFoundException('Post for update not found');
             }
-            const newPost = await this.postService.update(body.id, {
+            const newPost = await this.postService.update(postId, {
                 content,
                 userId: user.id,
-                keywords: ['discord', 'bot', 'commands', ...keywords],
+                shortDescription,
+                keywords,
                 title,
             });
 
@@ -131,7 +149,7 @@ export class PostsController {
                     old: oldPost,
                     new: newPost,
                 }),
-                rowId: body.id,
+                rowId: postId,
                 operation: SqlAction.Update,
                 tableName: 'posts',
                 userId: user.id,
@@ -141,7 +159,7 @@ export class PostsController {
                 content,
                 shortDescription,
                 userId: user.id,
-                keywords: ['discord', 'bot', 'commands', ...keywords],
+                keywords,
                 title,
             });
 
@@ -160,5 +178,14 @@ export class PostsController {
         return {
             message: 'Post saved sucessfully!',
         };
+    }
+
+    @Delete('/post/:id')
+    @HttpCode(204)
+    @RequirePermissions([Permissions.DeletePosts])
+    @UseGuards(PermissionsGuard)
+    async deletePost(@Param('id', IdPipe) id: number) {
+        await this.postService.delete(id);
+        return {};
     }
 }

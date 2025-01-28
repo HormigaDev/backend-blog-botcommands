@@ -23,7 +23,7 @@ export class IpWhitelistGuard implements CanActivate {
         }
 
         if (!this.allowedIps.includes(ip)) {
-            throw new ForbiddenException('Access from this IP is not allowed');
+            throw new ForbiddenException('Access from this IP is not allowed: ' + ip);
         }
 
         return true;
