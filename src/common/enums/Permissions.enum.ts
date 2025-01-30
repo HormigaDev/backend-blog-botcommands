@@ -15,4 +15,9 @@ export enum Permissions {
     CreatePosts = 2 ** 8,
     UpdatePosts = 2 ** 9,
     DeletePosts = 2 ** 10,
+
+    CreateTags = 2 ** 11,
+    UpdateTags = 2 ** 12,
+    ReadTags = 2 ** 13,
+    DeleteTags = 2 ** 14,
 }

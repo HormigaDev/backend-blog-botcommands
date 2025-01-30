@@ -1,5 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, JoinTable } from 'typeorm';
 import { PostStatus } from '../enums/PostStatus.enum';
+import { Tag } from './tag.entity';
 
 @Entity('posts')
 export class Post {
@@ -32,4 +33,18 @@ export class Post {
 
     @Column({ name: 'last_update', type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
     lastUpdate: Date;
+
+    @ManyToMany(() => Tag, (tag) => tag.posts)
+    @JoinTable({
+        name: 'tag_posts',
+        joinColumn: {
+            name: 'tag_id',
+            referencedColumnName: 'id',
+        },
+        inverseJoinColumn: {
+            name: 'post_id',
+            referencedColumnName: 'id',
+        },
+    })
+    tags: Tag[];
 }

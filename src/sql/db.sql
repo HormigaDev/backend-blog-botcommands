@@ -75,6 +75,19 @@ create table if not exists posts (
     foreign key (user_id) references users(id)
 );
 
+create table if not exists tags (
+    id serial primary key,
+    name varchar(100)
+);
+
+create table if not exists tag_posts (
+    tag_id integer not null,
+    post_id integer not null,
+    primary key(tag_id, post_id),
+    foreign key (tag_id) references tags (id),
+    foreign key (post_id) references posts (id)
+);
+
 create table if not exists audit_logs (
     id serial primary key,
     table_name varchar(255) not null,

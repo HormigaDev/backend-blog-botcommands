@@ -12,6 +12,7 @@ import { RolesModule } from './modules/roles/roles.module';
 import { PostsModule } from './modules/posts/posts.module';
 import { APP_FILTER } from '@nestjs/core';
 import { HttpExceptionFilter } from './common/exception.filter';
+import { TagsModule } from './modules/tags/tags.module';
 
 dotenv.config();
 
@@ -32,6 +33,7 @@ dotenv.config();
         LogsModule,
         RolesModule,
         PostsModule,
+        TagsModule,
     ],
     controllers: [AppController],
     providers: [
