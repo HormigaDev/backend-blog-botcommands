@@ -1,5 +1,4 @@
 import { IsNotEmpty, IsString, IsNumber, IsOptional, IsArray, Length } from 'class-validator';
-import { CreatePostContentDto } from './create-post-content.dto';
 
 export class UploadPostDto {
     /**
