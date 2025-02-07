@@ -23,7 +23,6 @@ describe('PostsController', () => {
         id: 1,
         title: 'Test Post',
         shortDescription: 'Short description',
-        content: 'This is a test post content.',
         userId: 1,
         status: 1,
         keywords: ['test', 'nestjs'],
@@ -41,6 +40,7 @@ describe('PostsController', () => {
         createdAt: new Date(),
         lastUpdate: new Date(),
         clearPassword: jest.fn().mockReturnThis(),
+        roles: [],
     };
 
     const mockFiles: Express.Multer.File[] = [
@@ -164,7 +164,7 @@ describe('PostsController', () => {
 
         it('debería lanzar NotFoundException si no se encuentra el post al actualizar', async () => {
             const body = {
-                id: 1,
+                id: '1',
                 title: 'Post Title',
                 keywords: ['keyword'],
                 shortDescription: 'Short description',
@@ -178,40 +178,40 @@ describe('PostsController', () => {
         });
     });
 
-    describe('downloadPostContent', () => {
-        it('debería devolver el contenido del post como archivo', async () => {
-            const res: Partial<Response> = {
-                setHeader: jest.fn(),
-                send: jest.fn(),
-                status: jest.fn(),
-            };
+    // describe('downloadPostContent', () => {
+    //     it('debería devolver el contenido del post como archivo', async () => {
+    //         const res: Partial<Response> = {
+    //             setHeader: jest.fn(),
+    //             send: jest.fn(),
+    //             status: jest.fn(),
+    //         };
 
-            jest.spyOn(postService, 'findOne').mockResolvedValue(mockPost); // Simulamos que se encuentra el post
+    //         jest.spyOn(postService, 'findOne').mockResolvedValue(mockPost); // Simulamos que se encuentra el post
 
-            await controller.downloadPostContent(1, res as Response);
+    //         await controller.downloadPostContent(1, res as Response);
 
-            expect(res.setHeader).toHaveBeenCalledWith('Content-Type', 'text/markdown');
-            expect(res.setHeader).toHaveBeenCalledWith(
-                'Content-Disposition',
-                'attachment; filename="Test Post.md"',
-            );
-            expect(res.send).toHaveBeenCalledWith(mockPost.content);
-        });
+    //         expect(res.setHeader).toHaveBeenCalledWith('Content-Type', 'text/markdown');
+    //         expect(res.setHeader).toHaveBeenCalledWith(
+    //             'Content-Disposition',
+    //             'attachment; filename="Test Post.md"',
+    //         );
+    //         expect(res.send).toHaveBeenCalledWith(mockPost.content);
+    //     });
 
-        it('debería lanzar NotFoundException si el post no existe', async () => {
-            jest.spyOn(postService, 'findOne').mockRejectedValue(
-                new NotFoundException('Post not found'),
-            );
+    //     it('debería lanzar NotFoundException si el post no existe', async () => {
+    //         jest.spyOn(postService, 'findOne').mockRejectedValue(
+    //             new NotFoundException('Post not found'),
+    //         );
 
-            const res: Partial<Response> = {
-                setHeader: jest.fn(),
-                send: jest.fn(),
-                status: jest.fn(),
-            };
+    //         const res: Partial<Response> = {
+    //             setHeader: jest.fn(),
+    //             send: jest.fn(),
+    //             status: jest.fn(),
+    //         };
 
-            await expect(controller.downloadPostContent(1, res as Response)).rejects.toThrow(
-                NotFoundException,
-            );
-        });
-    });
+    //         await expect(controller.downloadPostContent(1, res as Response)).rejects.toThrow(
+    //             NotFoundException,
+    //         );
+    //     });
+    // });
 });

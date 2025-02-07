@@ -1,4 +1,5 @@
 import { IsNotEmpty, IsString, IsNumber, IsOptional, IsArray, Length } from 'class-validator';
+import { CreatePostContentDto } from './create-post-content.dto';
 
 export class UploadPostDto {
     /**
@@ -45,4 +46,11 @@ export class UploadPostDto {
     @IsOptional()
     @IsArray({ message: 'Files must be an array.' })
     readonly files?: any[];
+
+    @IsNotEmpty({ message: 'Tag identifier is required.' })
+    @IsString({ message: 'Tag identifier must be a string.' })
+    @Length(1, 100, {
+        message: 'Tag identifier must be a between 1 and 100 characters long.',
+    })
+    readonly identifier: string;
 }

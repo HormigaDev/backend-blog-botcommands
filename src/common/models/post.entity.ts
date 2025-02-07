@@ -1,5 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 import { PostStatus } from '../enums/PostStatus.enum';
+import { PostContent } from './post-content.entity';
 
 @Entity('posts')
 export class Post {
@@ -11,9 +12,6 @@ export class Post {
 
     @Column({ name: 'short_description', type: 'varchar', length: 300 })
     shortDescription: string;
-
-    @Column({ type: 'text', nullable: false })
-    content: string;
 
     @Column({ name: 'user_id', type: 'integer', nullable: false })
     userId: number;
@@ -32,4 +30,7 @@ export class Post {
 
     @Column({ name: 'last_update', type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
     lastUpdate: Date;
+
+    @OneToMany(() => PostContent, (postContent) => postContent.post)
+    contents: PostContent[];
 }

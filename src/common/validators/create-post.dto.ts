@@ -1,4 +1,5 @@
 import { IsNotEmpty, IsString, IsNumber, IsArray, Length } from 'class-validator';
+import { CreatePostContentDto } from './create-post-content.dto';
 
 export class CreatePostDto {
     /**
@@ -7,7 +8,7 @@ export class CreatePostDto {
      */
     @IsNotEmpty({ message: 'Title is required.' })
     @IsString({ message: 'Title must be a string.' })
-    @Length(3, 255, { message: 'Title must be between 1 and 255 characters long.' })
+    @Length(3, 255, { message: 'Title must be between 3 and 255 characters long.' })
     readonly title: string;
 
     /**
@@ -21,13 +22,7 @@ export class CreatePostDto {
     })
     readonly shortDescription: string;
 
-    /**
-     * The content of the post.
-     * It must be a non-empty string.
-     */
-    @IsNotEmpty({ message: 'Content is required.' })
-    @IsString({ message: 'Content must be a string.' })
-    readonly content: string;
+    readonly content: CreatePostContentDto;
 
     /**
      * The user ID associated with the post.

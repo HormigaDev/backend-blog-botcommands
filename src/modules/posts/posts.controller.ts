@@ -35,6 +35,8 @@ import { SqlAction } from 'src/common/enums/SqlAction.enum';
 import { UploadPostDto } from 'src/common/validators/upload-post.dto';
 import { Response } from 'express';
 import { stringify } from 'flatted';
+import { CreatePostContentDto } from 'src/common/validators/create-post-content.dto';
+import { UpdatePostContentDto } from 'src/common/validators/update-post-content.dto';
 
 @Controller('posts')
 @UseGuards(JwtAuthGuard)
@@ -73,11 +75,11 @@ export class PostsController {
     @RequirePermissions([Permissions.UpdatePosts])
     @UseGuards(PermissionsGuard)
     async downloadPostContent(@Param('id', IdPipe) id: number, @Res() res: Response) {
-        const post = await this.postService.findOne(id);
+        const postContent = await this.postService.findPostContent(id);
         res.setHeader('Content-Type', 'text/markdown');
-        res.setHeader('Content-Disposition', `attachment; filename="${post.title}.md"`);
+        res.setHeader('Content-Disposition', `attachment; filename="Post.md"`);
 
-        res.send(post.content);
+        res.send(postContent.content);
     }
 
     @Put('/archive/:id')
@@ -137,7 +139,6 @@ export class PostsController {
                 throw new NotFoundException('Post for update not found');
             }
             const newPost = await this.postService.update(postId, {
-                content,
                 userId: user.id,
                 shortDescription,
                 keywords,
@@ -156,7 +157,10 @@ export class PostsController {
             });
         } else {
             const post = await this.postService.create({
-                content,
+                content: {
+                    identifier: body.identifier,
+                    content,
+                },
                 shortDescription,
                 userId: user.id,
                 keywords,
@@ -178,6 +182,27 @@ export class PostsController {
         return {
             message: 'Post saved sucessfully!',
         };
+    }
+
+    @HttpPost('/post-content/:id/create')
+    @HttpCode(201)
+    @RequirePermissions([Permissions.CreatePosts])
+    @UseGuards(PermissionsGuard)
+    async createPostContent(
+        @Body() body: CreatePostContentDto,
+        @Param('id', IdPipe) postId: number,
+    ) {
+        const postContent = await this.postService.createPostContent(postId, body);
+        return { postContent };
+    }
+
+    @Put('/post-content/update/:id')
+    @HttpCode(204)
+    @RequirePermissions([Permissions.UpdatePosts])
+    @UseGuards(PermissionsGuard)
+    async updatePostContent(@Param('id', IdPipe) id: number, @Body() body: UpdatePostContentDto) {
+        await this.postService.updatePostContent(id, body);
+        return {};
     }
 
     @Delete('/post/:id')

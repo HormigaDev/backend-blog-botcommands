@@ -65,7 +65,6 @@ create table if not exists posts (
     id serial primary key,
     title varchar(255) not null,
     short_description varchar(300),
-    content text not null,
     user_id integer not null,
     status_id integer not null default 1,
     keywords jsonb default '[]',
@@ -73,6 +72,28 @@ create table if not exists posts (
     created_at timestamp not null default current_timestamp,
     last_update timestamp not null default current_timestamp,
     foreign key (user_id) references users(id)
+);
+
+/* create table if not exists tags (
+    id serial primary key,
+    name varchar(100)
+);
+
+create table if not exists posts_tags (
+    post_id integer not null,
+    tag_id integer not null,
+    primary key (post_id, tag_id),
+    foreign key (post_id) references posts (id),
+    foreign key (tag_id) references tags (id)
+); */
+
+create table if not exists post_contents (
+    id serial primary key,
+    identifier varchar(100) not null,
+    content text not null,
+    post_id integer not null,
+    foreign key (post_id) references posts (id),
+    constraint unique_post_identifier unique (post_id, identifier)
 );
 
 create table if not exists audit_logs (

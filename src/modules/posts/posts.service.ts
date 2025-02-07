@@ -11,6 +11,9 @@ import { UtilsService } from 'src/common/services/utils.service';
 import { CreatePostDto } from 'src/common/validators/create-post.dto';
 import { UpdatePostDto } from 'src/common/validators/update-post.dto';
 import { Repository, SelectQueryBuilder } from 'typeorm';
+import { PostContent } from 'src/common/models/post-content.entity';
+import { CreatePostContentDto } from 'src/common/validators/create-post-content.dto';
+import { UpdatePostContentDto } from 'src/common/validators/update-post-content.dto';
 
 @Injectable()
 export class PostsService
@@ -20,23 +23,61 @@ export class PostsService
     constructor(
         @InjectRepository(Post)
         private readonly postRepository: Repository<Post>,
+        @InjectRepository(PostContent)
+        private readonly postContentRepository: Repository<PostContent>,
     ) {
         super(postRepository);
     }
 
     async create(dto: CreatePostDto): Promise<Post> {
+        const manager = this.postRepository.manager;
+        const queryRunner = manager.connection.createQueryRunner();
+
+        await queryRunner.startTransaction();
         try {
             const post = new Post();
             post.title = dto.title;
-            post.content = dto.content;
             post.shortDescription = dto.shortDescription;
             post.userId = dto.userId;
             post.keywords = dto.keywords;
             post.status = PostStatus.Active;
+            const savedPost = await queryRunner.manager.save(post);
 
-            return await this.postRepository.save(post);
+            const postContent = new PostContent();
+            postContent.identifier = dto.content.identifier;
+            postContent.content = dto.content.content;
+            postContent.postId = savedPost.id;
+
+            await queryRunner.manager.save(postContent);
+            await queryRunner.commitTransaction();
+
+            const postWithContents = await queryRunner.manager
+                .getRepository(Post)
+                .createQueryBuilder('post')
+                .leftJoinAndSelect('post.contents', 'postContent')
+                .where('post.id = :id', { id: savedPost.id })
+                .getOne();
+
+            return postWithContents;
         } catch (error) {
-            this.handleError('create', error);
+            await queryRunner.rollbackTransaction();
+            this.handleError('PostsService/create', error);
+        } finally {
+            await queryRunner.release();
+        }
+    }
+
+    async createPostContent(postId: number, dto: CreatePostContentDto): Promise<PostContent> {
+        try {
+            const post = await this.findOne(postId);
+            const postContent = new PostContent();
+            postContent.identifier = dto.identifier;
+            postContent.content = dto.content;
+            postContent.postId = post.id;
+
+            return await this.postContentRepository.save(postContent);
+        } catch (error) {
+            this.handleError('PostsService/createPostContent', error);
         }
     }
 
@@ -44,7 +85,7 @@ export class PostsService
         try {
             return await this.postRepository
                 .createQueryBuilder('post')
-                .select()
+                .leftJoinAndSelect('post.contents', 'postContent')
                 .skip(this.page(pagination))
                 .take(pagination.limit)
                 .orderBy('post.createdAt', 'DESC')
@@ -60,7 +101,10 @@ export class PostsService
         order: PostOrderByOptions = { by: PostOrderBy.PostDate, order: 'DESC' },
     ): Promise<Post[] | number> {
         try {
-            let query = this.postRepository.createQueryBuilder('post').select();
+            let query = this.postRepository
+                .createQueryBuilder('post')
+                .select()
+                .leftJoinAndSelect('post.contents', 'postContent');
             if (filters.status) {
                 query = query.where('post.status = :status', { status: filters.status });
             } else {
@@ -115,6 +159,7 @@ export class PostsService
             const post = await this.postRepository
                 .createQueryBuilder('post')
                 .select()
+                .leftJoinAndSelect('post.contents', 'postContent')
                 .where('post.id = :id and post.status = :status', { id, status: PostStatus.Active })
                 .getOne();
             if (!post) {
@@ -126,6 +171,19 @@ export class PostsService
         }
     }
 
+    async findPostContent(id: number): Promise<PostContent> {
+        try {
+            const postContent = await this.postContentRepository.findOneBy({ id });
+            if (!postContent) {
+                throw new NotFoundException('Post content not found');
+            }
+
+            return postContent;
+        } catch (error) {
+            this.handleError('PostsService/findPostContent', error);
+        }
+    }
+
     async update(id: number, dto: UpdatePostDto): Promise<Post> {
         try {
             const post = await this.findOne(id);
@@ -133,6 +191,28 @@ export class PostsService
             return await this.findOne(id);
         } catch (error) {
             this.handleError('PostsService/update', error);
+        }
+    }
+
+    async updatePostContent(
+        postContentId: number,
+        dto: UpdatePostContentDto,
+    ): Promise<PostContent> {
+        try {
+            await this.findPostContent(postContentId);
+            const props: Record<string, any> = {};
+            if (dto.identifier) props.identifier = dto.identifier;
+            if (dto.content) props.content = dto.content;
+            await this.postContentRepository
+                .createQueryBuilder()
+                .update()
+                .set(props)
+                .where('id = :id', { id: postContentId })
+                .execute();
+
+            return await this.findPostContent(postContentId);
+        } catch (error) {
+            this.handleError('PostsService/updatePostContent', error);
         }
     }
 

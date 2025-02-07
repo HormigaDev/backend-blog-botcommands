@@ -1,5 +1,6 @@
 import { IsOptional, IsString, IsNumber, IsArray, IsEnum, Length } from 'class-validator';
 import { PostStatus } from '../enums/PostStatus.enum';
+import { CreatePostContentDto } from './create-post-content.dto';
 
 export class UpdatePostDto {
     /**
@@ -23,15 +24,6 @@ export class UpdatePostDto {
         message: 'Short description must be a between 50 and 300 characters long.',
     })
     readonly shortDescription?: string;
-
-    /**
-     * The content of the post.
-     * It must be a string if provided.
-     * It is optional.
-     */
-    @IsOptional()
-    @IsString({ message: 'Content must be a string.' })
-    readonly content?: string;
 
     /**
      * The user ID associated with the post.
