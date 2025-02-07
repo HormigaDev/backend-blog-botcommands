@@ -1,6 +1,5 @@
 import { IsOptional, IsString, IsNumber, IsArray, IsEnum, Length } from 'class-validator';
 import { PostStatus } from '../enums/PostStatus.enum';
-import { CreatePostContentDto } from './create-post-content.dto';
 
 export class UpdatePostDto {
     /**
