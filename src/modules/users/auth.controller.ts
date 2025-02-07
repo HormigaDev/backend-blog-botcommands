@@ -15,13 +15,11 @@ import { LoginDto } from 'src/common/validators/login.dto';
 import { UsersService } from './users.service';
 import { Response } from 'express';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
-import { IpWhitelistGuard } from 'src/common/guards/ip-whitelist.guard';
 import { UpdatePasswordDto } from 'src/common/validators/update-password.dto';
 import { AuditLogsService } from '../logs/audit-logs.service';
 import { SqlAction } from 'src/common/enums/SqlAction.enum';
 
 @Controller('auth')
-@UseGuards(IpWhitelistGuard)
 export class AuthController {
     constructor(
         private readonly authService: AuthService,
