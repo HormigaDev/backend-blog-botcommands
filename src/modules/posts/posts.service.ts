@@ -115,7 +115,7 @@ export class PostsService
 
             if (filters.query) {
                 query = query.andWhere(
-                    '(post.title like :query or post.content like :query or post.keywords @> :keywords)',
+                    '(post.title like :query or post.shortDescription like :query or post.keywords @> :keywords)',
                     {
                         query: `%${filters.query}%`,
                         keywords: `[${JSON.stringify(filters.query)}]`,
@@ -140,7 +140,7 @@ export class PostsService
             query = this.applyDateFilters(filters, query);
             if (filters.query) {
                 query = query.andWhere(
-                    '(post.title like :query or post.content like :query or post.keywords @> :keywords)',
+                    '(post.title like :query or post.shortDescription like :query or post.keywords @> :keywords)',
                     {
                         query: `%${filters.query}%`,
                         keywords: `[${JSON.stringify(filters.query)}]`,
