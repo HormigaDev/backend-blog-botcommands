@@ -6,12 +6,12 @@ import * as cookieParser from 'cookie-parser';
 async function bootstrap() {
     const app = await NestFactory.create(AppModule);
     app.use(cookieParser());
-    app.enableCors({
-        credentials: true,
-        origin: process.env.ORIGIN_CORS,
-        methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-        allowedHeaders: ['Authorization', 'Content-Type', 'Cookie'],
-    });
+    // app.enableCors({
+    //     credentials: true,
+    //     origin: process.env.ORIGIN_CORS,
+    //     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    //     allowedHeaders: ['Authorization', 'Content-Type', 'Cookie'],
+    // });
     app.useGlobalPipes(
         new ValidationPipe({
             transform: true,
